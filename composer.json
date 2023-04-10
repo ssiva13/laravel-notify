@@ -1,0 +1,34 @@
+{
+    "name": "ssiva/laravel-notify",
+    "description": "Laravel Notifications library",
+    "type": "library",
+    "require": {
+        "php": "^8.2",
+        "illuminate/events": "*",
+        "guzzlehttp/guzzle": "^7.5",
+        "orchestra/testbench": "^8.3",
+        "darkaonline/l5-swagger": "^8.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "mockery/mockery": "*"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ssiva\\LaravelNotify\\": "src/"
+        }
+    },
+    "autoloaddev": {
+        "psr-4": {
+            "Ssiva\\LaravelNotify\\Tests": "Tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Simon Siva",
+            "email": "simonsiva13@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
