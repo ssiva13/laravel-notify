@@ -30,5 +30,12 @@
             "email": "simonsiva13@gmail.com"
         }
     ],
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\Ssiva\\LaravelNotify\\LaravelNotifyServiceProvider"
+            ]
+        }
+    }
 }
