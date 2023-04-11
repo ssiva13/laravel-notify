@@ -58,11 +58,21 @@ You can install the package via composer from you project root in two ways:
 Ssiva\LaravelNotify\LaravelNotifyServiceProvider::class,
 ```
 
+- Open your `app/Providers/EventServiceProvider.php` and add the following to the `$listen` array:
+
+```php
+// LaravelNotify Listener
+OrderStatusUpdated::class => [
+    SendOrderStatusNotification::class,
+],
+```
+
 - Run the command below to publish the package config file `config/notify.php`
 
 ```bash
 php artisan vendor:publish --tag="notify_config"
 ````
+
 This will create a notify.php file in your Laravel config directory where you can configure the package settings.
 
 To use the package, you will need to set the `NOTIFY_WEBHOOK_URL` environment variable to the URL of your Microsoft Teams webhook.
