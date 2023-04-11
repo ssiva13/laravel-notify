@@ -5,16 +5,16 @@
  * @author   Simon Siva <simonsiva13@gmail.com>
  */
 
-namespace Ssiva\LaravelNotify\Tests\Feature;
+namespace Tests\Feature;
+
 
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Event;
-use Orchestra\Testbench\TestCase;
 use Ssiva\LaravelNotify\Events\OrderStatusUpdated;
 use Ssiva\LaravelNotify\Listeners\SendOrderStatusNotification;
-
+use Orchestra\Testbench\TestCase;
 //use Tests\TestCase;
 
 class OrderStatusUpdatedTest extends TestCase
@@ -28,8 +28,8 @@ class OrderStatusUpdatedTest extends TestCase
         event(new OrderStatusUpdated($order_uuid, $new_status, $timestamp));
         Event::assertDispatched(OrderStatusUpdated::class, function ($event) use ($order_uuid, $new_status, $timestamp) {
             return $event->order_uuid === $order_uuid &&
-                $event->new_status === $new_status &&
-                $event->timestamp === $timestamp;
+                $event->status === $new_status &&
+                $event->updatedAt === $timestamp;
         });
     }
     
@@ -42,7 +42,6 @@ class OrderStatusUpdatedTest extends TestCase
         $new_status = 'Delivered';
         $timestamp = now()->format('Y-m-d H:i:s');
         
-        dd($order_uuid);
         $expectedMessage = [
             "@type" => "MessageCard",
             "summary" => "Order status update",
@@ -68,14 +67,23 @@ class OrderStatusUpdatedTest extends TestCase
         $clientMock = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
             ->getMock();
+        
         $clientMock->expects($this->once())
             ->method('post')
-            ->with('https://webhook.site/your-webhook-url', [
-                'json' => $expectedMessage,
-            ])
+            ->with(
+                $this->equalTo("https://webhook.site/a0668c60-b2fd-4f7a-88b3-26b0b318df32'"),
+                $this->equalTo([
+                    'json' => $expectedMessage,
+                ]),
+                $this->equalTo([
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                    ],
+                ])
+            )
             ->willReturn(new Response());
         
-        $listener = new SendOrderStatusNotification();
+        $listener = new SendOrderStatusNotification('https://webhook.site/a0668c60-b2fd-4f7a-88b3-26b0b318df32');
         $listener->handle(new OrderStatusUpdated($order_uuid, $new_status, $timestamp));
     }
     
