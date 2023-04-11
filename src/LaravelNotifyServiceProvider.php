@@ -20,5 +20,19 @@ class LaravelNotifyServiceProvider extends EventServiceProvider
         ],
     ];
     
+    /**
+     * Bootstrap the application services.
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/config/notify.php' => config_path('notify.php')
+        ], 'notify_config');
+    }
+    
+    public function register()
+    {
+        //
+    }
     
 }

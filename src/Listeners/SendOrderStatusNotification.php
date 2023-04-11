@@ -7,17 +7,24 @@
 
 namespace Ssiva\LaravelNotify\Listeners;
 
+use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 use Ssiva\LaravelNotify\Events\OrderStatusUpdated;
 
-class SendOrderStatusNotification
+class SendOrderStatusNotification implements ShouldQueue
 {
+    public int $tries = 3;
+    protected string $webHookUrl;
+    
     /**
      * Create the event listener.
      */
-    public function __construct()
+    public function __construct($url = null)
     {
-        //
+        $this->webHookUrl = $url ? $url : config('notify.webhook_url');
     }
     
     /**
@@ -27,39 +34,60 @@ class SendOrderStatusNotification
      *
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
      */
-    public function handle(OrderStatusUpdated $event)
+    public function handle(OrderStatusUpdated $event): void
     {
-        $order_uuid = $event->order_uuid;
-        $new_status = $event->new_status;
-        $updated_at = $event->updated_at;
+        $order = $event->order_uuid;
+        $status = $event->status;
+        $updatedAt = $event->updatedAt;
+        
         $message = [
             "@type" => "MessageCard",
-            "summary" => "Order status update",
+            "summary" => "Order Status update",
             "sections" => [
                 [
-                    "activityTitle" => "Order status update",
-                    "activitySubtitle" => "Order #".$event->order_uuid,
-                    "activityImage" => "https://www.example.com/logo.png",
+                    "activityTitle" => "Order Status update",
+                    "activitySubtitle" => "Order #".$order,
                     "facts" => [
                         [
                             "name" => "New status",
-                            "value" => $event->new_status,
+                            "value" => $status,
                         ],
                         [
                             "name" => "Timestamp",
-                            "value" => $event->timestamp,
+                            "value" => $updatedAt,
                         ],
                     ],
                 ],
             ],
         ];
+        
         // Build MS Teams notification card
         // Submit webhook request to a given endpoint
         $client = new Client();
-        $response = $client->post('https://webhook.site/your-webhook-url', [
+        $response = $client->post($this->webHookUrl, [
             'json' => $message,
         ]);
+        // Check the response status code
+        if ($response->getStatusCode() === 200) {
+            // Response status code is 200 (OK), process the response body
+            $responseBody = json_decode($response->getBody(), true);
+            Log::info('Webhook request successful with response: ' . $response->getBody());
+            
+        } else {
+            Log::error('Webhook request failed with status code: ' . $response->getStatusCode());
+            throw new Exception("Webhook request failed with status code {$response->getStatusCode()}");
+        }
+    }
+    
+    /**
+     * @throws \Exception
+     */
+    public function failed(OrderStatusUpdated $event, Exception $exception): void
+    {
+        Log::error('Failed to send order status notification: ' . $exception->getMessage());
+        throw new Exception("Event Handling failed with status code {$exception->getCode()}");
     }
     
 }

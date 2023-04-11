@@ -33,12 +33,16 @@ class OrderStatusUpdatedTest extends TestCase
         });
     }
     
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function testSendOrderStatusNotificationListener()
     {
         $order_uuid = '123456';
         $new_status = 'Delivered';
         $timestamp = now()->format('Y-m-d H:i:s');
         
+        dd($order_uuid);
         $expectedMessage = [
             "@type" => "MessageCard",
             "summary" => "Order status update",
@@ -71,8 +75,9 @@ class OrderStatusUpdatedTest extends TestCase
             ])
             ->willReturn(new Response());
         
-        $listener = new SendOrderStatusNotification($clientMock);
+        $listener = new SendOrderStatusNotification();
         $listener->handle(new OrderStatusUpdated($order_uuid, $new_status, $timestamp));
     }
+    
     
 }

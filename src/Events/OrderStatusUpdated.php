@@ -20,24 +20,22 @@ class OrderStatusUpdated
     use Dispatchable;
     use InteractsWithSockets;
     use SerializesModels;
-
-
+    
+    
     public $order_uuid;
-    public $new_status;
-    public $updated_at;
-
-
+    public $status;
+    public $updatedAt;
+    
     /**
      * Create a new event instance.
      */
-    public function __construct($order_uuid, $new_status, $updated_at)
+    public function __construct($order_uuid, $orderStatus, $updatedAt)
     {
-        dd('everere');
         $this->order_uuid = $order_uuid;
-        $this->new_status = $new_status;
-        $this->updated_at = $updated_at;
+        $this->status = $orderStatus;
+        $this->updatedAt = $updatedAt;
     }
-
+    
     /**
      * Get the channels the event should broadcast on.
      *
