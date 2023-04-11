@@ -5,12 +5,13 @@
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.5",
+        "ext-simplexml": "*",
         "orchestra/testbench": "^8.3",
         "darkaonline/l5-swagger": "^8.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "mockery/mockery": "*"
+        "phpunit/phpunit": "^10.0",
+        "mockery/mockery": "^1.4.4"
     },
     "license": "MIT",
     "autoload": {
