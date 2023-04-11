@@ -4,7 +4,6 @@
     "type": "library",
     "require": {
         "php": "^8.2",
-        "illuminate/events": "*",
         "guzzlehttp/guzzle": "^7.5",
         "orchestra/testbench": "^8.3",
         "darkaonline/l5-swagger": "^8.5"
