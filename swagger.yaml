@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: Notification Service Library
+  description: To ensure that we will not miss any sale and to keep track of the statuses of the orders a basic notification service needs to be created.
+  version: '1.0'
+paths: {}
+components:
+  schemas:
+    OrderStatusUpdated:
+      type: object
+      required:
+        - order_uuid
+        - status
+        - updatedAt
+      properties:
+        order_uuid:
+          type: string
+          description: The UUID of the updated order
+        status:
+          type: string
+          description: The new status of the order
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the order was updated

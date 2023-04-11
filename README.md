@@ -64,44 +64,25 @@ Ssiva\LaravelNotify\LaravelNotifyServiceProvider::class,
 php artisan vendor:publish --tag="notify_config"
 ````
 This will create a notify.php file in your Laravel config directory where you can configure the package settings.
-`
-To use the package, you'll need to set the NOTIFY_WEBHOOK_URL environment variable to the URL of your Microsoft Teams webhook.
+
+To use the package, you will need to set the `NOTIFY_WEBHOOK_URL` environment variable to the URL of your Microsoft Teams webhook.
 
 ### Usage
 
-To use this package, you'll need to register a listener for the MyVendor\MyPackage\Events\OrderStatusUpdated event. Here's an example listener:
+To use this package, you'll need to dispatch the event at a point of your liking
+
+Here's an example:
 
 ```php
+use Ssiva\LaravelNotify\Events\OrderStatusUpdated;
 
-<?php
-
-namespace App\Listeners;
-
-use MyVendor\MyPackage\Events\OrderStatusUpdated;
-use MyVendor\MyPackage\WebhookController;
-
-class SendOrderStatusNotification
-{
-    /**
-     * Handle the event.
-     *
-     * @param  OrderStatusUpdated  $event
-     * @return void
-     */
-    public function handle(OrderStatusUpdated $event)
-    {
-        $webhook = new WebhookController();
-        $webhook->handleNotification($event->order_uuid, $event->status, $event->updated_at);
-    }
-}
+event(new OrderStatusUpdated($order->uuid, $order->orderStatus->title, $order->updated_at));
 
 ```
 
 In this example, the SendOrderStatusNotification listener creates a new WebhookController instance and calls the handleNotification() method with the order_uuid, status, and updated_at properties from the OrderStatusUpdated event.
 
 The handleNotification() method builds a Microsoft Teams notification card with these values and submits a webhook request to the configured endpoint.
-
-### Testing
 
 ### Testing
 
@@ -120,15 +101,34 @@ To test run either of the following
 
 
 Swagger Documentation
-Endpoints
+```yaml
+openapi: 3.0.0
+info:
+  title: Notification Service Library
+  description: To ensure that we will not miss any sale and to keep track of the statuses of the orders a basic notification service needs to be created.
+  version: '1.0'
+paths: {}
+components:
+  schemas:
+    OrderStatusUpdated:
+      type: object
+      required:
+        - order_uuid
+        - status
+        - updatedAt
+      properties:
+        order_uuid:
+          type: string
+          description: The UUID of the updated order
+        status:
+          type: string
+          description: The new status of the order
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the order was updated
 
-    /orders/{id} (GET): Returns the status of the order with the given id.
-
-Models
-Order
-
-    id (integer): The ID of the order.
-    status (string): The current status of the order.
+```
 
 ### Credits
 [Simon Siva](https://ssiva13.github.io/)
