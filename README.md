@@ -3,37 +3,69 @@
 This package provides a basic notification service for tracking order statuses. 
 It allows you to register listeners for order status update events and send notifications to a Microsoft Teams channel via webhook.
 
-## Installation
 
-To install this package, add it to your `composer.json` file and run `composer update`:
+### Installation
 
-```bash
-composer require myvendor/my-package
-```
+You can install the package via composer from you project root in two ways:
 
-Then, add the service provider to your config/app.php file:
-
-```php
-'providers' => [
-    // ...
-    MyVendor\MyPackage\MyPackageServiceProvider::class,
-],
-```
-Finally, publish the package config file:
-```php
-
-php artisan vendor:publish --provider="MyVendor\MyPackage\MyPackageServiceProvider" --tag="config"
-```
+- Local Dependency
+    - Create Composer Local Dependency Source
+      ```bash
+          mkdir "libraries"
+      ```
+    - Clone repo
+      ```bash
+          git clone https://github.com/ssiva13/laravel-notify.git libraries/laravel-notify
+      ```
+    - Add Composer Local Dependency Source to the repositories key
+      ```bash
+      "repositories": {
+          "local": {
+              "type": "path",
+              "url": "./libraries/*",
+              "options": {
+                  "symlink": false
+              }
+          }
+      },
+      ```
+      ```bash
+        composer require ssiva/laravel-notify:dev-main
+      ```
+- Git Source
+    - Add Composer Git or VCS Source to the repositories key
+      ```bash
+      "repositories": {
+          "local": {
+              "type": "git",
+              "url": "https://github.com/ssiva13/laravel-notify.git",
+              "options": {
+                  "symlink": false
+              }
+          }
+      },
+      ```
+      ```bash
+        composer require ssiva/laravel-notify:dev-main
+      ```
 
 ### Configuration
-After publishing the config file, you should see a my-package.php file in your config directory. Here's an example config file:
+
+- Open your `config/app.php` and add the following to the `providers` array:
 
 ```php
-return [
-    'webhook_url' => env('MY_PACKAGE_WEBHOOK_URL'),
-];
+// LaravelNotify ServiceProvider
+Ssiva\LaravelNotify\LaravelNotifyServiceProvider::class,
 ```
-To use the package, you'll need to set the MY_PACKAGE_WEBHOOK_URL environment variable to the URL of your Microsoft Teams webhook.
+
+- Run the command below to publish the package config file `config/notify.php`
+
+```bash
+php artisan vendor:publish --tag="notify_config"
+````
+This will create a notify.php file in your Laravel config directory where you can configure the package settings.
+`
+To use the package, you'll need to set the NOTIFY_WEBHOOK_URL environment variable to the URL of your Microsoft Teams webhook.
 
 ### Usage
 
@@ -71,7 +103,21 @@ The handleNotification() method builds a Microsoft Teams notification card with 
 
 ### Testing
 
-To run the package's unit tests, run the following command:
+### Testing
+
+You can run the package tests using PHPUnit. The tests are located in the **`tests`** directory.
+In you Laravel project open `phpunit.xml` and add the following `testsuite` object in the `testsuites` body
+
+```xml
+<testsuite name="Laravel Notify">
+    <directory suffix="Test.php">./vendor/ssiva/laravel-notify/Tests</directory>
+</testsuite>
+```
+To test run either of the following
+- `vendor/bin/phpunit`
+
+- `php artisan test`
+
 
 Swagger Documentation
 Endpoints
@@ -84,6 +130,9 @@ Order
     id (integer): The ID of the order.
     status (string): The current status of the order.
 
-License
+### Credits
+[Simon Siva](https://ssiva13.github.io/)
 
+
+### License
 This package is open-sourced software licensed under the MIT license.

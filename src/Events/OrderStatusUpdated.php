@@ -15,6 +15,29 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * @SWG\Definition(
+ *     definition="OrderStatusUpdated",
+ *     type="object",
+ *     required={"order_uuid", "status", "updatedAt"},
+ *     @SWG\Property(
+ *         property="order_uuid",
+ *         type="string",
+ *         description="The UUID of the updated order"
+ *     ),
+ *     @SWG\Property(
+ *         property="status",
+ *         type="string",
+ *         description="The new status of the order"
+ *     ),
+ *     @SWG\Property(
+ *         property="updatedAt",
+ *         type="string",
+ *         format="date-time",
+ *         description="The timestamp when the order was updated"
+ *     )
+ * )
+ */
 class OrderStatusUpdated
 {
     use Dispatchable;
